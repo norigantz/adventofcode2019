@@ -1,13 +1,13 @@
 $input = File.read('input').split(',').map(&:to_i)
 
 def numdigits(num)
-		count = 0
-		n = num
-		while n != 0
-			n /= 10
-			count += 1
-		end
-		count
+	count = 0
+	n = num
+	while n != 0
+		n /= 10
+		count += 1
+	end
+	count
 end
 
 def digit(i, num)
@@ -34,6 +34,40 @@ def intcode(input, param)
 			output = digit(3, input[i]) == 0 ? input[input[i+1]] : input[i+1]
 			puts output
 			i += 2
+		elsif digit(1, input[i]) == 5
+			first = digit(3, input[i]) == 0 ? input[input[i+1]] : input[i+1]
+			second = digit(4, input[i]) == 0 ? input[input[i+2]] : input[i+2]
+			if first != 0
+				i = second
+			else
+				i += 3
+			end
+		elsif digit(1, input[i]) == 6
+			first = digit(3, input[i]) == 0 ? input[input[i+1]] : input[i+1]
+			second = digit(4, input[i]) == 0 ? input[input[i+2]] : input[i+2]
+			if first == 0
+				i = second
+			else
+				i += 3
+			end
+		elsif digit(1, input[i]) == 7
+			first = digit(3, input[i]) == 0 ? input[input[i+1]] : input[i+1]
+			second = digit(4, input[i]) == 0 ? input[input[i+2]] : input[i+2]
+			if first < second
+				input[input[i+3]] = 1
+			else
+				input[input[i+3]] = 0
+			end
+			i += 4
+		elsif digit(1, input[i]) == 8
+			first = digit(3, input[i]) == 0 ? input[input[i+1]] : input[i+1]
+			second = digit(4, input[i]) == 0 ? input[input[i+2]] : input[i+2]
+			if first == second
+				input[input[i+3]] = 1
+			else
+				input[input[i+3]] = 0
+			end
+			i += 4
 		elsif input[i] == 99
 			break
 		else
@@ -44,4 +78,4 @@ def intcode(input, param)
 	return input[0]
 end
 
-intcode($input, 1)
+intcode($input, 5)
