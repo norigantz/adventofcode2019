@@ -10,20 +10,7 @@ class Node
 
 	def set_parent(parent)
 		@parent = parent
-		# @orbit_count = parent.orbit_count + 1
 		@parent.satellites.push(self)
-		# update_satellites()
-	end
-
-	def set_satellite(satellite)
-		@satellites.push(satellite)
-	end
-
-	def update_satellites
-		for sat in @satellites
-			sat.orbit_count = @parent.orbit_count + 1
-			sat.update_satellites()
-		end
 	end
 end
 
@@ -54,9 +41,6 @@ for node in nodeHash
 		root = node[1]
 	end
 end
-
-# puts root.satellites.first.label
-# puts root.label
 
 def orbitCount(node, depth)
 	if node == nil

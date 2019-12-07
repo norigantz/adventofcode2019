@@ -10,20 +10,7 @@ class Node
 
 	def set_parent(parent)
 		@parent = parent
-		# @orbit_count = parent.orbit_count + 1
 		@parent.satellites.push(self)
-		# update_satellites()
-	end
-
-	def set_satellite(satellite)
-		@satellites.push(satellite)
-	end
-
-	def update_satellites
-		for sat in @satellites
-			sat.orbit_count = @parent.orbit_count + 1
-			sat.update_satellites()
-		end
 	end
 end
 
@@ -58,9 +45,6 @@ end
 you = nodeHash['YOU']
 san = nodeHash['SAN']
 
-# puts root.satellites.first.label
-# puts root.label
-
 def orbitCount(node, depth)
 	if node == nil
 		return
@@ -72,8 +56,47 @@ def orbitCount(node, depth)
 	end
 end
 
-orbitCount(root, 0)
+def minDist(dist, nodes)
+	minNode = nodes.first
+	for node in nodes
+		if dist[node[0]] < dist[minNode[0]]
+			minNode = node
+		end
+	end
+	return minNode
+end
 
-sum = 0
-nodeHash.each {|key, value| sum += value.orbit_count}
-puts sum
+def djikstra(graph, source)
+	dist = Hash.new
+	dist[source.label] = 0
+	queue = []
+	for node in graph
+		if node[0] == source.label
+			queue.push(node)
+			next
+		end
+		dist[node[0]] = 999999
+		queue.push(node)
+	end
+
+	while queue.any?
+		v = minDist(dist, queue)
+		queue.delete(v)
+
+		neighbors = v[1].satellites
+		neighbors.push(v[1].parent)
+		for neighbor in neighbors
+			if neighbor == nil
+				next
+			end
+			alt = dist[v[0]] + 1
+			if alt < dist[neighbor.label]
+				dist[neighbor.label] = alt
+			end
+		end
+	end
+	return dist
+end
+
+dist = djikstra(nodeHash, you)
+puts dist['SAN'] - 2
