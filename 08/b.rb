@@ -48,19 +48,21 @@ layers = process_image(25, 6)
 digits_0 = 999999
 bestLayer = nil
 answer = 0
+result = []
+result.push([2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2])
+result.push([2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2])
+result.push([2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2])
+result.push([2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2])
+result.push([2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2])
+result.push([2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2])
 for l in layers
 	currZeros = 0
 	currOnes = 0
 	currTwos = 0
-	for pixel in l
+	for row in 0..5
 		for i in 0..25
-			case digit(i+1, pixel)
-			when 0
-				currZeros += 1
-			when 1
-				currOnes += 1
-			when 2
-				currTwos += 1
+			if result[row][i] == 2 and digit(26-i, l[row]) != 2
+				result[row][i] = digit(26-i, l[row])
 			end
 		end
 	end
@@ -70,4 +72,7 @@ for l in layers
 		answer = currOnes * currTwos
 	end
 end
-puts answer
+
+for r in result
+	puts r.inspect
+end
