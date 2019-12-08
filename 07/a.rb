@@ -92,14 +92,13 @@ def phase()
 	maxOut = 0
 	maxInputPhase = 0
 	inputPhase = 1
-	currDigit = 0
 	phaseSet = [0,0,0,0,0]
 	while inputPhase <= 43210
 		while !isValidPhase(inputPhase)
 			inputPhase += 1
 		end
-		for i in 1..5
-			phaseSet[i] = digit(i, inputPhase)
+		for i in 0..4
+			phaseSet[i] = digit(5-i, inputPhase)
 		end
 		for i in 0..4
 			ampIndex = i == 0 ? 0 : (i - 1)
