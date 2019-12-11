@@ -1,15 +1,5 @@
 $input = File.read('input').split(',').map(&:to_i)
 
-def numdigits(num)
-	count = 0
-	n = num
-	while n != 0
-		n /= 10
-		count += 1
-	end
-	count
-end
-
 def digit(i, num)
 	(num % (10**i))/10**(i-1) unless i <= 0 or i > 6
 end
