@@ -20,7 +20,7 @@ def raycast(i, j, dx, dy)
 		return 0
 	end
 
-	if dx.abs() > 0 and dy.abs() > 0
+	if dx != 0 and dy != 0
 		gcf = GCF(dx, dy)
 		dx /= gcf
 		dy /= gcf
@@ -47,9 +47,9 @@ def raycast(i, j, dx, dy)
 			# puts ' '
 			return 1
 		else
+			iterations += 1
 			dx = iterations*deltaX
 			dy = iterations*deltaY
-			iterations += 1
 		end
 	end
 	return 0
@@ -66,8 +66,6 @@ def perform_raycasts(i, j)
 	return curr
 end
 
-# char value 35 is asteroid
-# char value 46 is empty space
 max = 0
 bestX = 0
 bestY = 0
