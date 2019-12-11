@@ -1,7 +1,7 @@
 $input = File.read('input').split(',').map(&:to_i)
 
 class Robot
-	attr_accessor :machine, :facing, :x, :y, :grid, :paint_count, :running
+	attr_accessor :machine, :facing, :x, :y, :grid, :paint_count, :running, :minX, :minY, :maxX, :maxY
 	FACE = [UP=0, RIGHT=1, DOWN=2, LEFT=3]
 
 	def initialize
@@ -9,16 +9,21 @@ class Robot
 		@facing = UP
 		@x = 0
 		@y = 0
+		@minX = 0
+		@minY = 0
+		@maxX = 0
+		@maxY = 0
 		@grid = Hash.new
+		@grid[0] = 1
 		@paint_count = 0
 		@running = true
 	end
 
 	def paint(col)
-		if @grid[@x*100+@y] == nil
+		if @grid[@y*100+@x] == nil
 			@paint_count += 1
 		end
-		@grid[@x*100+@y] = col
+		@grid[@y*100+@x] = col
 	end
 
 	def turn(dir)
@@ -30,17 +35,29 @@ class Robot
 		case @facing
 		when 0
 			@y += 1
+			if @y > @maxY
+				@maxY = @y
+			end
 		when 1
 			@x += 1
+			if @x > @maxX
+				@maxX = @x
+			end
 		when 2
 			@y -= 1
+			if @y < @minY
+				@minY = @y
+			end
 		when 3
 			@x -= 1
+			if @x < @minX
+				@minX = @x
+			end
 		end
 	end
 
 	def run
-		@machine.set_signal(@grid[@x*100+@y] == 1 ? 1 : 0)
+		@machine.set_signal(@grid[@y*100+@x] == 1 ? 1 : 0)
 		out = @machine.run
 		if out != nil and out.length == 2
 			paint(out[0])
@@ -53,7 +70,6 @@ class Robot
 
 	def halt_machine
 		@running = false
-		puts @paint_count
 	end
 end
 
@@ -102,7 +118,6 @@ class Machine
 
 	def intcode
 		if @intcode[@position] == 99
-			puts 'halt'
 			@halt = true
 			return
 		end
@@ -214,4 +229,22 @@ end
 r = Robot.new
 while r.running
 	r.run
+end
+
+grid = r.grid
+result = []
+for y in r.minY..r.maxY
+	row = []
+	for x in r.minX..r.maxX
+		if grid[y*100+x] == nil
+			row.push(0)
+		else
+			row.push(grid[y*100+x])
+		end
+	end
+	result.push(row)
+end
+result = result.reverse
+for row in result
+	puts row.inspect
 end
