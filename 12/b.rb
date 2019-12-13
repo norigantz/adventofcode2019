@@ -6,65 +6,6 @@ class Matrix
 	end
 end
 
-class Moon
-	attr_accessor :position, :velocity
-
-	def initialize(x, y, z)
-		@position = Vec3.new(x,y,z)
-		@velocity = Vec3.new(0,0,0)
-	end
-
-	def update_velocity(moonB)
-		if @position.x != moonB.position.x
-			change = @position.x > moonB.position.x ? -1 : 1
-			@velocity.x += change
-			moonB.velocity.x += -change
-		end
-		if @position.y != moonB.position.y
-			change = @position.y > moonB.position.y ? -1 : 1
-			@velocity.y += change
-			moonB.velocity.y += -change
-		end
-		if @position.z != moonB.position.z
-			change = @position.z > moonB.position.z ? -1 : 1
-			@velocity.z += change
-			moonB.velocity.z += -change
-		end
-	end
-
-	def update_position
-		@position.add(@velocity)
-	end
-
-	def potential_energy
-		@position.x.abs + @position.y.abs + @position.z.abs
-	end
-
-	def kinetic_energy
-		@velocity.x.abs + @velocity.y.abs + @velocity.z.abs
-	end
-
-	def total_energy
-		potential_energy * kinetic_energy
-	end
-end
-
-class Vec3
-	attr_accessor :x, :y, :z
-
-	def initialize(x=0, y=0, z=0)
-		@x = x
-		@y = y
-		@z = z
-	end
-
-	def add(v)
-		@x += v.x
-		@y += v.y
-		@z += v.z
-	end
-end
-
 class Universe
 	attr_reader :positions, :velocities
 
@@ -100,20 +41,6 @@ def step
 		end
 	end
 	$position_mat = $position_mat + $velocity_mat
-end
-
-def total_energy
-	total = 0
-	for i in 0..$position_mat.row_count-1
-		potential = 0
-		kinetic = 0
-		for j in 0..$position_mat.column_count-1
-			potential += $position_mat[i, j].abs
-			kinetic += $velocity_mat[i, j].abs
-		end
-		total += potential*kinetic
-	end
-	total
 end
 
 debugX = Hash.new

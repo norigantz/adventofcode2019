@@ -32,6 +32,10 @@ class Moon
 		end
 	end
 
+	def update_position
+		@position.add(@velocity)
+	end
+
 	def potential_energy
 		@position.x.abs + @position.y.abs + @position.z.abs
 	end
@@ -74,44 +78,6 @@ Callisto = Moon.new(initial_positions[3][0][0].to_i, initial_positions[3][1][0].
 
 $moons = [Io, Europa, Ganymede, Callisto]
 
-def update_position(moon)
-	moon.position.add(moon.velocity)
-end
-
-$velocity_mat = Matrix.zero(4, 3)
-$position_mat = Matrix[[initial_positions[0][0][0].to_i, initial_positions[0][1][0].to_i, initial_positions[0][2][0].to_i],
-					  [initial_positions[1][0][0].to_i, initial_positions[1][1][0].to_i, initial_positions[1][2][0].to_i],
-					  [initial_positions[2][0][0].to_i, initial_positions[2][1][0].to_i, initial_positions[2][2][0].to_i],
-					  [initial_positions[3][0][0].to_i, initial_positions[3][1][0].to_i, initial_positions[3][2][0].to_i]]
-def step_matrix
-	for moonA in 0..$position_mat.row_count-1
-		for moonB in 0..$position_mat.row_count-1
-			for i in 0..$position_mat.column_count-1
-				if moonA < moonB and $position_mat[moonA, i] != $position_mat[moonB, i]
-					change = $position_mat[moonA, i] > $position_mat[moonB, i] ? -1 : 1
-					$velocity_mat[moonA, i] += change
-					$velocity_mat[moonB, i] += -change
-				end
-			end
-		end
-	end
-	$position_mat = $position_mat + $velocity_mat
-end
-
-def total_energy
-	total = 0
-	for i in 0..$position_mat.row_count-1
-		potential = 0
-		kinetic = 0
-		for j in 0..$position_mat.column_count-1
-			potential += $position_mat[i, j].abs
-			kinetic += $velocity_mat[i, j].abs
-		end
-		total += potential*kinetic
-	end
-	total
-end
-
 def step
 	for moonA in 0..$moons.length-1
 		for moonB in 0..$moons.length-1
@@ -121,15 +87,13 @@ def step
 		end
 	end
 	for moon in $moons
-		update_position(moon)
+		moon.update_position
 	end
 end
 
 count = 0
 while count < 1000
 	step
-	step_matrix
 	count += 1
 end
 puts Io.total_energy + Europa.total_energy + Ganymede.total_energy + Callisto.total_energy
-puts total_energy
