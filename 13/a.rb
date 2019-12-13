@@ -1,16 +1,10 @@
 $input = File.read('input').split(',').map(&:to_i)
 
 class Game
-	attr_accessor :machine, :x, :y, :grid, :running, :minX, :minY, :maxX, :maxY, :block_count
+	attr_accessor :machine, :grid, :running, :block_count
 
 	def initialize
 		@machine = Machine.new('A', $input)
-		@x = 0
-		@y = 0
-		@minX = 0
-		@minY = 0
-		@maxX = 0
-		@maxY = 0
 		@grid = Hash.new
 		@running = true
 		@block_count = 0
@@ -18,17 +12,6 @@ class Game
 
 	def set_cell(x, y, tile_id)
 		@grid[y*100+x] = tile_id
-		if x < @minX
-			@minX = x
-		elsif x > @maxX
-			@maxX = x
-		end
-		if y < @minY
-			@minY = y
-		elsif y > @maxY
-			@maxY = y
-		end
-
 		if tile_id == 2
 			@block_count += 1
 		elsif @grid[y*100+x] == 2
@@ -201,30 +184,11 @@ def numdigits(num)
 end
 
 def digit(i, num)
-	(num % (10**i))/10**(i-1) unless i <= 0 or i > 6
+	(num % (10**i))/10**(i-1) unless i <= 0
 end
 
 r = Game.new
 while r.running
 	r.run
 end
-
 puts r.block_count
-
-# grid = r.grid
-# result = []
-# for y in r.minY..r.maxY
-# 	row = []
-# 	for x in r.minX..r.maxX
-# 		if grid[y*100+x] == nil
-# 			row.push(0)
-# 		else
-# 			row.push(grid[y*100+x])
-# 		end
-# 	end
-# 	result.push(row)
-# end
-# result = result.reverse
-# for row in result
-# 	puts row.inspect
-# end

@@ -2,20 +2,13 @@ $input = File.read('input').split(',').map(&:to_i)
 $input[0] = 2 # Free Play mode
 
 class Game
-	attr_accessor :machine, :x, :y, :grid, :running, :minX, :minY, :maxX, :maxY, :block_count, :joystick, :score, :ballX, :paddleX
+	attr_accessor :machine, :grid, :running, :joystick, :score, :ballX, :paddleX
 	STICK = [LEFT=-1, NEUTRAL=0, RIGHT=1]
 
 	def initialize
 		@machine = Machine.new('A', $input)
-		@x = 0
-		@y = 0
-		@minX = 0
-		@minY = 0
-		@maxX = 0
-		@maxY = 0
 		@grid = Hash.new
 		@running = true
-		@block_count = 0
 		@joystick = 0
 		@score = 0
 		@ballX = 0
@@ -42,25 +35,10 @@ class Game
 			return
 		end
 		@grid[y*100+x] = tile_id
-		if x < @minX
-			@minX = x
-		elsif x > @maxX
-			@maxX = x
-		end
-		if y < @minY
-			@minY = y
-		elsif y > @maxY
-			@maxY = y
-		end
-
-		if tile_id == 2
-			@block_count += 1
-		elsif tile_id == 3
+		if tile_id == 3
 			@paddleX = x
 		elsif tile_id == 4
 			@ballX = x
-		elsif @grid[y*100+x] == 2
-			@block_count -= 1
 		end
 	end
 
@@ -230,7 +208,7 @@ def numdigits(num)
 end
 
 def digit(i, num)
-	(num % (10**i))/10**(i-1) unless i <= 0 or i > 6
+	(num % (10**i))/10**(i-1) unless i <= 0
 end
 
 r = Game.new
@@ -238,23 +216,4 @@ while r.running
 	r.run
 	r.auto_pilot
 end
-
 puts r.score
-
-# grid = r.grid
-# result = []
-# for y in r.minY..r.maxY
-# 	row = []
-# 	for x in r.minX..r.maxX
-# 		if grid[y*100+x] == nil
-# 			row.push(0)
-# 		else
-# 			row.push(grid[y*100+x])
-# 		end
-# 	end
-# 	result.push(row)
-# end
-# result = result.reverse
-# for row in result
-# 	puts row.inspect
-# end
