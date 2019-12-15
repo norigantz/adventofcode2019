@@ -1,4 +1,4 @@
-$input = File.read('input').split(/\r?\n/)
+$input = File.read('examplec').split(/\r?\n/)
 $reactions = Hash.new # Key: Material, Value: List of Materials needed
 $materials = Hash.new # Key: Material, Value: Amount Available
 $ore_used = 0
@@ -39,8 +39,6 @@ def get_available_material(material)
 	$materials[material.match(/\D+/).to_s]
 end
 
-# puts $reactions.inspect
-
 def produce_material(product)
 	material = product.match(/\D+/).to_s
 	reactants = get_reactants(product)
@@ -61,12 +59,6 @@ def produce_material(product)
 		end
 		$materials[n_mat] -= n_val
 	end
-	# for i in 1..reactants.length-1
-		# n = reactants[i]
-		# n_val = n.match(/\d+/).to_s.to_i
-		# n_mat = n.match(/\D+/).to_s
-		# $materials[n_mat] -= n_val
-	# end
 	$materials[material] += coefficient
 	p coefficient.to_s + ' ' + material + ' produced using ' + reactants.to_s
 end

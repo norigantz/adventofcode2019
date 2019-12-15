@@ -1,8 +1,10 @@
 $input = File.read('input').split(/\r?\n/)
 $reactions = Hash.new # Key: Material, Value: List of Materials needed
 $materials = Hash.new # Key: Material, Value: Amount Available
-$ore_used = 0
 $materials['ORE'] = -1
+$ore_used = 0
+$trillion = 1000000000000
+$maxC = 0
 
 for reaction in $input
 	entries = reaction.split('=>')
@@ -22,55 +24,51 @@ for reaction in $input
 		if $materials[r.match(/\D+/).to_s] == nil
 			$materials[r.match(/\D+/).to_s] = 0
 		end
-	end
-end
-
-def get_reactants(product)
-	if $reactions[product.match(/\D+/).to_s] == nil
-		p 'No reaction found with given product: ' + product.match(/\D+/).to_s
-	end
-	$reactions[product.match(/\D+/).to_s]
-end
-
-def get_available_material(material)
-	if $materials[material.match(/\D+/).to_s] == nil
-		p 'No material found with given material code: ' + material.match(/\D+/).to_s
-	end
-	$materials[material.match(/\D+/).to_s]
-end
-
-# puts $reactions.inspect
-
-def produce_material(product)
-	material = product.match(/\D+/).to_s
-	reactants = get_reactants(product)
-	coefficient = reactants[0]
-	for i in 1..reactants.length-1
-		n = reactants[i]
-		p n
-		n_val = n.match(/\d+/).to_s.to_i
-		n_mat = n.match(/\D+/).to_s
-		if $materials[n_mat] == -1
-			$materials[material] += coefficient
-			p coefficient.to_s + ' ' + material + ' produced using ' + n_val.to_s + ' ' + n_mat
-			$ore_used += n_val
-			return
+		if r.match(/\d+/).to_s.to_i > $maxC
+			r.match(/\d+/).to_s.to_i
 		end
-		while $materials[n_mat] < n_val
-			produce_material(n)
-		end
-		$materials[n_mat] -= n_val
 	end
-	# for i in 1..reactants.length-1
-		# n = reactants[i]
-		# n_val = n.match(/\d+/).to_s.to_i
-		# n_mat = n.match(/\D+/).to_s
-		# $materials[n_mat] -= n_val
-	# end
-	$materials[material] += coefficient
-	p coefficient.to_s + ' ' + material + ' produced using ' + reactants.to_s
+
+	if product.match(/\d+/).to_s.to_i > $maxC
+		$maxC = product.match(/\d+/).to_s.to_i
+	end
+end
+$maxC = 1 / $maxC.to_f
+
+def materials_balanced
+	balanced = true
+	for m in $materials.keys
+		if m != 'ORE' and $materials[m] < 0
+			balanced = false
+		end
+	end
+	return balanced
 end
 
-produce_material('FUEL')
+def balance_materials
+	while !materials_balanced
+		for m in $materials.keys
+			if m != 'ORE' and $materials[m] < 0
+				debt = -$materials[m]
+				reactants = $reactions[m]
+				rep = (debt + reactants[0]-1)/reactants[0]
+				$materials[m] += rep*reactants[0]
+				for i in 1..reactants.length-1
+					n = reactants[i]
+					n_val = n.match(/\d+/).to_s.to_i
+					n_mat = n.match(/\D+/).to_s
+					$materials[n_mat] -= rep*n_val
+				end
+				break
+			end
+		end
+	end
+end
 
-p $ore_used
+target_fuel = 7863863
+$materials.each { |k, v| $materials[k] = 0 }
+$materials['FUEL'] = -target_fuel
+balance_materials
+p $trillion
+p -$materials['ORE']
+p target_fuel
