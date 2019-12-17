@@ -66,7 +66,7 @@ def minDist(dist, nodes)
 	return minNode
 end
 
-def djikstra(graph, source)
+def dijkstra(graph, source)
 	dist = Hash.new
 	dist[source.label] = 0
 	queue = []
