@@ -1,8 +1,14 @@
 $input = File.read('input').split(',').map(&:to_i)
 $input[0] = 2 # Wake up robot
 
+# A: r4->r10->r8->r4
+# B: r10->r6->r4
+# C: r4->l12->r6->l12
+
+# ABABCBCABC
+
 class Robot
-	attr_accessor :machine, :grid, :running, :x, :y, :minX, :maxX, :minY, :maxY, :alignment_sum
+	attr_accessor :machine, :grid, :running, :x, :y, :minX, :maxX, :minY, :maxY, :alignment_sum, :dust_collected
 
 	def initialize
 		@machine = Machine.new('A', $input)
@@ -15,21 +21,24 @@ class Robot
 		@minY = 0
 		@maxY = 0
 		@alignment_sum = 0
+		@dust_collected = 0
 		@machine.set_signals(instruction)
 	end
 
 	def form_steps(chars)
-		if chars.length > 20
+		if chars.length > 10
 			p 'too many steps'
 			return nil
 		end
 		arr = []
 		for c in chars
-			arr.push(c)
-			arr.push(',')
+			for i in 0..c.length-1
+				arr.push(c[i].ord)
+			end
+			arr.push(','.ord)
 		end
 		arr[-1] = 10
-		arr.map(&:ord)
+		arr
 	end
 
 	def instruction
@@ -37,19 +46,19 @@ class Robot
 	end
 
 	def movement_routine
-		form_steps(['A','B','C'])
+		form_steps(['A','B','A','B','C','B','C','A','B','C'])
 	end
 
 	def function_a
-		form_steps(['L','1','R','1'])
+		form_steps(['R','4','R','10','R','8','R','4'])
 	end
 
 	def function_b
-		form_steps(['L','1','R','1'])
+		form_steps(['R','10','R','6','R','4'])
 	end
 
 	def function_c
-		form_steps(['L','1','R','1'])
+		form_steps(['R','4','L','12','R','6','L','12'])
 	end
 
 	def video_feed
@@ -60,6 +69,8 @@ class Robot
 		if tile_id == 10
 			@y += 1
 			@x = 0
+		elsif tile_id > 255
+			@dust_collected = tile_id
 		else
 			@grid[@y*100+@x] = tile_id.chr
 			@x += 1
@@ -71,7 +82,6 @@ class Robot
 	end
 
 	def run
-		
 		out = @machine.run
 		if out != nil and out.length == 1
 			set_cell(out[0])
@@ -283,3 +293,4 @@ while r.running
 end
 r.draw_grid
 p r.instruction
+p r.dust_collected
