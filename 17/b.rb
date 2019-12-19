@@ -1,4 +1,5 @@
 $input = File.read('input').split(',').map(&:to_i)
+$input[0] = 2 # Wake up robot
 
 class Robot
 	attr_accessor :machine, :grid, :running, :x, :y, :minX, :maxX, :minY, :maxY, :alignment_sum
@@ -14,6 +15,45 @@ class Robot
 		@minY = 0
 		@maxY = 0
 		@alignment_sum = 0
+		@machine.set_signals(instruction)
+	end
+
+	def form_steps(chars)
+		if chars.length > 20
+			p 'too many steps'
+			return nil
+		end
+		arr = []
+		for c in chars
+			arr.push(c)
+			arr.push(',')
+		end
+		arr[-1] = 10
+		arr.map(&:ord)
+	end
+
+	def instruction
+		[movement_routine,function_a,function_b,function_c,video_feed].flatten!(1)
+	end
+
+	def movement_routine
+		form_steps(['A','B','C'])
+	end
+
+	def function_a
+		form_steps(['L','1','R','1'])
+	end
+
+	def function_b
+		form_steps(['L','1','R','1'])
+	end
+
+	def function_c
+		form_steps(['L','1','R','1'])
+	end
+
+	def video_feed
+		form_steps(['y'])
 	end
 
 	def set_cell(tile_id)
@@ -31,7 +71,7 @@ class Robot
 	end
 
 	def run
-		@machine.set_signal(@joystick)
+		
 		out = @machine.run
 		if out != nil and out.length == 1
 			set_cell(out[0])
@@ -118,6 +158,11 @@ class Machine
 
 	def set_signal(signal)
 		@signal_in = [signal]
+		@yield = false
+	end
+
+	def set_signals(signal)
+		@signal_in = signal
 		@yield = false
 	end
 
@@ -234,6 +279,7 @@ end
 r = Robot.new
 while r.running
 	r.run
+	
 end
 r.draw_grid
-p r.alignment_sum
+p r.instruction
